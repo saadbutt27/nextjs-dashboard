@@ -3,33 +3,7 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
 import { signIn } from "@/auth";
-
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData
-) {
-  try {
-    await signIn("credentials", Object.fromEntries(formData));
-  } catch (error) {
-    if ((error as Error).message.includes("CredentialsSignin")) {
-      return "CredentialSignin";
-    }
-    // redirect("/dashboard");
-    // throw error;
-  }
-}
-
-// This is temporary until @types/react-dom is updated
-export type State = {
-  errors?: {
-    customerId?: string[];
-    amount?: string[];
-    status?: string[];
-  };
-  message?: string | null;
-};
 
 const InvoiceSchema = z.object({
   id: z.string(),
@@ -48,8 +22,17 @@ const InvoiceSchema = z.object({
 const CreateInvoice = InvoiceSchema.omit({ id: true, date: true });
 // Use Zod to update the expected types
 const UpdateInvoice = InvoiceSchema.omit({ date: true });
-
 const DeleteInvoice = InvoiceSchema.pick({ id: true });
+
+// This is temporary until @types/react-dom is updated
+export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  message?: string | null;
+};
 
 export async function createInvoice(prevState: State, formData: FormData) {
   // Validate form using Zod
@@ -134,5 +117,20 @@ export async function deleteInvoice(formData: FormData) {
     return { message: "Invoice deleted." };
   } catch (error) {
     return { message: "Database Error: Failed to update invoice." };
+  }
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn("credentials", Object.fromEntries(formData));
+  } catch (error) {
+    if ((error as Error).message.includes("CredentialsSignin")) {
+      return "CredentialSignin";
+    }
+    // redirect("/dashboard");
+    throw error;
   }
 }

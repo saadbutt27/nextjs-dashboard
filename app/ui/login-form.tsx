@@ -1,5 +1,6 @@
 'use client';
- 
+
+import { authenticate } from '@/app/lib/action';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
@@ -9,7 +10,6 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
-import { authenticate } from '@/app/lib/action';
  
 export default function LoginForm() {
   const [code, action] = useFormState(authenticate, undefined);
